@@ -109,8 +109,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .intro__skip { position: absolute; bottom: 28px; left: 0; right: 0; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: 0; animation: fade-in .6s 1.2s forwards; }
 .intro.is-play .intro__logo { animation: logo-fly 1.9s cubic-bezier(.16, .84, .3, 1) .35s forwards; }
 .intro.is-play .intro__ring { animation: ring 1.1s ease-out 1.55s forwards; }
-.intro.is-out { animation: intro-out .9s var(--ease) forwards; pointer-events: none; }
-.intro.is-out .intro__logo { animation: logo-leave .9s var(--ease) forwards; }
+/* выход: фон и звёзды растворяются, логотип доезжает до своего места на странице (app.js) */
+.intro { transition: background-color 1.2s ease; }
+.intro canvas { transition: opacity 1.2s ease; }
+.intro.is-out { background-color: transparent; pointer-events: none; }
+.intro.is-out canvas { opacity: 0; }
+.intro.is-out .intro__skip, .intro.is-out .intro__ring { animation: none; opacity: 0; }
+.intro__logo img { filter: drop-shadow(0 0 40px rgba(232, 113, 58, .35)); }
+.intro__logo.is-move { transition: transform 1.2s cubic-bezier(.65, 0, .2, 1), opacity .4s ease, filter .4s ease; }
+/* пока идёт заставка, страница под ней ждёт; потом проявляется постепенно */
+.intro-logo .hero__logo { opacity: 0; animation: none; }
+.has-intro .hero h1 .w > span { animation-play-state: paused; }
+.has-intro .bar, .has-intro .hero__kicker, .has-intro .hero__orbit { opacity: 0; }
+.js.has-intro .hero .reveal.is-in { opacity: 0; transform: translateY(28px); }
+.with-intro .bar, .with-intro .hero__kicker, .with-intro .hero__orbit { transition: opacity 1.2s ease .25s; }
+.with-intro .hero h1 .w > span { animation-delay: calc(var(--i) * 90ms + 350ms); }
+.with-intro .hero .reveal { transition-delay: calc(var(--d, 0) * 70ms + 700ms); }
 @keyframes logo-fly {
   0%   { opacity: 0; transform: scale(.02) rotate(-14deg); filter: blur(18px); }
   55%  { opacity: 1; filter: blur(0); }

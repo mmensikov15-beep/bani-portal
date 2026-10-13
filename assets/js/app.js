@@ -129,11 +129,31 @@
       if (!done) requestAnimationFrame(frame);
     }
 
+    // Выход без скачка: логотип заставки сам доезжает до места логотипа на странице
+    // и там подменяется настоящим, а тёмный фон со звёздами растворяется в небе.
+    var leaving = false;
     function finish() {
-      if (done) return;
+      if (leaving) return;
+      leaving = true;
+      var logo = $('.intro__logo', el), hero = $('.hero__logo'), cs = getComputedStyle(logo);
+      logo.style.transform = cs.transform; logo.style.opacity = cs.opacity; logo.style.filter = cs.filter;
+      logo.style.animation = 'none';
+      void logo.offsetWidth;                       // фиксируем текущий кадр, дальше — переход
+      logo.classList.add('is-move');
+      if (hero) {
+        var r = hero.getBoundingClientRect();
+        var dx = r.left + r.width / 2 - el.clientWidth / 2, dy = r.top + r.height / 2 - el.clientHeight / 2;
+        logo.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + (r.width / logo.offsetWidth) + ')';
+      } else {
+        logo.style.transform = 'scale(.6)';
+      }
+      logo.style.opacity = hero ? 1 : 0; logo.style.filter = 'none';
       el.classList.add('is-out');
-      doc.classList.remove('has-intro');
-      setTimeout(function () { done = true; el.remove(); document.body.classList.remove('is-locked'); }, 900);
+      doc.classList.remove('has-intro');           // шапка и текст начинают проявляться
+      setTimeout(function () {
+        doc.classList.remove('intro-logo');        // настоящий логотип уже ровно под летящим
+        done = true; el.remove(); document.body.classList.remove('is-locked');
+      }, 1300);
     }
 
     document.body.classList.add('is-locked');
@@ -141,7 +161,7 @@
     requestAnimationFrame(frame);
     el.addEventListener('click', finish);
     document.addEventListener('keydown', finish, { once: true });
-    setTimeout(finish, 3300);
+    setTimeout(finish, 2600);
   }
 
   /* ================= появление блоков ================= */
